@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <section
       className=""
-      style={{ background: `url(${footer})`, backgroundSize: 'cover' }}
+      style={{ background: `url(${footer})`, backgroundSize: "cover" }}
     >
       <footer className="pt-[74px] lg:px-20">
         <div className="footer">

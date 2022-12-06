@@ -1,11 +1,129 @@
-import React from 'react';
+import React from "react";
+import { useContext } from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../contexts/Authentication/Authentication";
 
 const Login = () => {
-    return (
-        <div>
-            <h3>Login</h3>
-        </div>
-    );
+  const {
+    register,
+    reset,
+    formState: { errors },
+    handleSubmit,
+  } = useForm();
+
+  const { loginUser, googleLogin } = useContext(AuthContext);
+  const [loginError, setLoginError] = useState("");
+
+  // these are two for private route and user redirect
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const from = location.state?.from?.pathname || "/";
+
+  const handleLogin = (data) => {
+    // console.log(data);
+    setLoginError("");
+    loginUser(data.email, data.password)
+      .then((result) => {
+        const user = result.user;
+        navigate(from, { replace: true });
+        reset();
+        // console.log(user);
+      })
+      .catch((error) => {
+        console.error(error);
+        setLoginError(error.message);
+      });
+  };
+
+  // handle google login
+  const handleGoogleLogin = () => {
+    googleLogin()
+      .then((result) => {
+        const user = result.user;
+        toast("user login successfully");
+        console.log(user);
+      })
+      .catch((err) => {
+        console.error(err);
+        loginError(err.message);
+      });
+  };
+
+  return (
+    <section className="lg:h-[800px]  flex justify-center items-center lg:my-10 lg:mt-20">
+      <div className="w-96 p-12 lg:shadow-lg rounded-lg">
+        <h2 className="lg:text-3xl text-xl text-bold text-center mb-4 mt-10 lg:mt-0">
+          Login
+        </h2>
+        <form onSubmit={handleSubmit(handleLogin)}>
+          <div className="form-control w-full max-w-xs">
+            <label className="label">
+              <span className="label-text">Email</span>
+            </label>
+            <input
+              className="input input-bordered w-full"
+              type="email"
+              {...register("email", { required: "Email is required" })}
+            />
+            {errors.email && (
+              <p className="text-red-600" role="alert">
+                {errors.email?.message}
+              </p>
+            )}
+          </div>
+          <div className="form-control w-full max-w-xs">
+            <label className="label">
+              <span className="label-text">Password</span>
+            </label>
+            <input
+              className="input input-bordered w-full"
+              type="password"
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be 6 characters or longer",
+                },
+              })}
+            />
+            <div>
+              {loginError && (
+                <p className="text-red-700 text-center">{loginError}</p>
+              )}
+            </div>
+            <p className="text-red-600" role="alert">
+              {errors.password?.message}
+            </p>
+            <label className="label">
+              <span className="label-text">Forget password?</span>
+            </label>
+          </div>
+
+          <input
+            className="btn btn-dark w-full mt-2"
+            type="submit"
+            value="Login"
+          />
+        </form>
+        <p className="text-center my-2">
+          <small>
+            New to Doctors Portal?{" "}
+            <Link to="/signup" className="text-info">
+              Create new account
+            </Link>{" "}
+          </small>
+        </p>
+        <div className="divider">OR</div>
+        <button onClick={handleGoogleLogin} className="btn btn-outline w-full">
+          Continue With Google
+        </button>
+      </div>
+    </section>
+  );
 };
 
 export default Login;
