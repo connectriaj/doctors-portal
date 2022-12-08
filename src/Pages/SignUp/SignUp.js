@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useContext } from "react";
 import { AuthContext } from "../../contexts/Authentication/Authentication";
 import toast from "react-hot-toast";
+import useToken from "../../hooks/useToken";
 
 const SignUp = () => {
   const {
@@ -13,22 +14,38 @@ const SignUp = () => {
     formState: { errors },
   } = useForm();
 
-  const { createUser, updateUser, googleLogin } = useContext(AuthContext);
+  const { createUser, updateUser, googleLogin, verifyEmail } =
+    useContext(AuthContext);
   const [signUpError, setSignUpError] = useState("");
 
+  const [createdUserEmail, setCreatedUserEmail] = useState("");
+  const [token] = useToken(createdUserEmail);
+  const navigate = useNavigate();
+
+  if (token) {
+    navigate("/");
+  }
+
   const handleSignUp = (data) => {
-    // console.log(data);
     setSignUpError("");
+
     createUser(data.email, data.password)
       .then((result) => {
         const user = result.user;
-        reset();
-        toast("user created successfully");
+
+        handleEmailVerification();
+        toast.success(
+          "user created successfully, please verify your email address"
+        );
         const userInfo = {
           displayName: data.name,
         };
+        reset();
+
         updateUser(userInfo)
-          .then(() => {})
+          .then(() => {
+            saveUsersData(data.name, data.email);
+          })
           .catch((err) => console.error(err));
       })
       .catch((err) => {
@@ -47,6 +64,27 @@ const SignUp = () => {
       .catch((err) => {
         console.error(err);
         signUpError(err.message);
+      });
+  };
+
+  const handleEmailVerification = () => {
+    verifyEmail()
+      .then(() => {})
+      .catch((err) => console.error(err));
+  };
+
+  const saveUsersData = (name, email) => {
+    const user = { name, email };
+    fetch(`http://localhost:5000/users`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(user),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setCreatedUserEmail(email);
       });
   };
 

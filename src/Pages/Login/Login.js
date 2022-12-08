@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../contexts/Authentication/Authentication";
+import useToken from "../../hooks/useToken";
 
 const Login = () => {
   const {
@@ -14,8 +15,11 @@ const Login = () => {
     handleSubmit,
   } = useForm();
 
-  const { loginUser, googleLogin } = useContext(AuthContext);
+  const { loginUser, googleLogin, forgetPassword, setLoading } =
+    useContext(AuthContext);
   const [loginError, setLoginError] = useState("");
+  const [loginUserEmail, setLoginUserEmail] = useState("");
+  const [token] = useToken(loginUserEmail);
 
   // these are two for private route and user redirect
   const location = useLocation();
@@ -23,20 +27,38 @@ const Login = () => {
 
   const from = location.state?.from?.pathname || "/";
 
+  if (token) {
+    navigate(from, { replace: true });
+  }
+
   const handleLogin = (data) => {
     // console.log(data);
     setLoginError("");
     loginUser(data.email, data.password)
       .then((result) => {
         const user = result.user;
-        navigate(from, { replace: true });
+        if (user.emailVerified) {
+          setLoginUserEmail(data.email);
+          toast.success("user login successfully.");
+        } else {
+          toast.error("your email is not verified, please verify your email!");
+        }
         reset();
         // console.log(user);
       })
       .catch((error) => {
         console.error(error);
         setLoginError(error.message);
+      })
+      .finally(() => {
+        setLoading(false);
       });
+  };
+
+  const handleForgetPassword = (data) => {
+    forgetPassword(data.email)
+      .then(() => {})
+      .catch((err) => console.error(err));
   };
 
   // handle google login
@@ -44,7 +66,7 @@ const Login = () => {
     googleLogin()
       .then((result) => {
         const user = result.user;
-        toast("user login successfully");
+        toast.success("user login successfully");
         console.log(user);
       })
       .catch((err) => {
@@ -99,7 +121,9 @@ const Login = () => {
               {errors.password?.message}
             </p>
             <label className="label">
-              <span className="label-text">Forget password?</span>
+              <button onClick={handleForgetPassword}>
+                <span className="label-text underline">Forget password?</span>
+              </button>
             </label>
           </div>
 
