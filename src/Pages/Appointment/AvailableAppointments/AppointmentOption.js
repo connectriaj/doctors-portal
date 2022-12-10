@@ -1,7 +1,7 @@
 import React from "react";
 
 const AppointmentOption = ({ appointmentOptions, setTreatment }) => {
-  const { name, slots } = appointmentOptions;
+  const { name, slots, price } = appointmentOptions;
   return (
     <section>
       <div className="card bg-base-100 shadow-xl p-4">
@@ -11,8 +11,10 @@ const AppointmentOption = ({ appointmentOptions, setTreatment }) => {
           <p>
             {slots.length} {slots.length > 1 ? "Spaces" : "Space"} Available
           </p>
+          <p>
+            <small>Price ${price}</small>
+          </p>
           <div className="card-actions justify-center">
-            
             {/* The button to open modal */}
             <label
               disabled={slots.length === 0}

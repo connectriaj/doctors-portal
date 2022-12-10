@@ -1,9 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
+import ConfirmModal from "../../Shared/ConfirmModal/ConfirmModal";
+import Loading from "../../Shared/Loading/Loading";
 
 const AllUsers = () => {
-  const { data: users = [], refetch } = useQuery({
+  const [deletingUser, setDeletingUser] = useState(null);
+  const closeModal = () => {
+    setDeletingUser(null);
+  };
+
+  const {
+    data: users = [],
+    refetch,
+    isLoading,
+  } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
       const res = await fetch(`http://localhost:5000/users`);
@@ -28,6 +40,26 @@ const AllUsers = () => {
       });
   };
 
+  const handleDeleteUser = (user) => {
+    fetch(`http://localhost:5000/users/${user._id}`, {
+      method: "DELETE",
+      headers: {
+        authorization: `bearer ${localStorage.getItem("accessToken")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.deletedCount > 0) {
+          refetch();
+          toast.success(`User ${user.name} deleted successfully`);
+        }
+      });
+  };
+
+  if (isLoading) {
+    <Loading></Loading>;
+  }
+
   return (
     <section>
       <h2 className="lg:text-3xl font-semibold lg:mb-10 lg:mt-4 text-center">
@@ -41,7 +73,7 @@ const AllUsers = () => {
               <th>User Name</th>
               <th>User Email</th>
               <th>Admin</th>
-              <th>Delete</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -61,15 +93,32 @@ const AllUsers = () => {
                   )}
                 </td>
                 <td>
-                  <button className="btn btn-xs btn-error capitalize">
-                    Delete
-                  </button>
+                  {/* The button to open modal */}
+                  <label
+                    onClick={() => setDeletingUser(user)}
+                    htmlFor="confirm-modal"
+                    className="btn btn-sm btn-error rounded-full"
+                  >
+                    Remove
+                  </label>
+                  {/* end modal button */}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      {deletingUser && (
+        <ConfirmModal
+          warning={`Warning!`}
+          title={`Are you sure you want to delete?`}
+          message={`If you delete ${deletingUser.name}. It cannot be undone!`}
+          modalData={deletingUser}
+          closeModal={closeModal}
+          successButtonName="Delete"
+          successAction={handleDeleteUser}
+        ></ConfirmModal>
+      )}
     </section>
   );
 };

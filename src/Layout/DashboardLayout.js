@@ -23,11 +23,11 @@ const DashboardLayout = () => {
         </div>
         <div className="drawer-side">
           <label htmlFor="dashboard-drawer" className="drawer-overlay"></label>
-          <ul className="menu p-4 w-80 bg-base-100 text-base-content">
+          <ul className="menu p-4 w-80 text-base-content">
             <li>
               <Link
                 to="/dashboard"
-                className="lg:text-lg lg:font-bold text-info underline"
+                className="lg:text-lg lg:font-bold  underline"
               >
                 My Appointments
               </Link>
@@ -35,19 +35,19 @@ const DashboardLayout = () => {
                 <>
                   <Link
                     to="/dashboard/users"
-                    className="lg:text-lg lg:font-bold text-info underline"
+                    className="lg:text-lg lg:font-bold  underline"
                   >
                     All Users
                   </Link>
                   <Link
                     to="/dashboard/add-doctor"
-                    className="lg:text-lg lg:font-bold text-info underline"
+                    className="lg:text-lg lg:font-bold  underline"
                   >
                     Add A Doctor
                   </Link>
                   <Link
                     to="/dashboard/manage-doctors"
-                    className="lg:text-lg lg:font-bold text-info underline"
+                    className="lg:text-lg lg:font-bold  underline"
                   >
                     Manage Doctors
                   </Link>

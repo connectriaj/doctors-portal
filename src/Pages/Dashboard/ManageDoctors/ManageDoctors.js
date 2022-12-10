@@ -70,7 +70,7 @@ const ManageDoctors = () => {
           <tbody>
             {doctors &&
               doctors?.map((doctor, index) => (
-                <tr>
+                <tr key={doctor?._id}>
                   <th>{index + 1}</th>
                   <th>
                     <div className="avatar">
