@@ -55,7 +55,7 @@ const Login = () => {
       });
   };
 
-  const handleForgetPassword = (data) => {
+  const handleForgetPassword = (data, email) => {
     forgetPassword(data.email)
       .then(() => {})
       .catch((err) => console.error(err));
