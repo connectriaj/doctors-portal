@@ -17,7 +17,7 @@ const AvailableAppointments = ({ selectedDate, setSelectedDate }) => {
     queryKey: ["appointmentOptions, date"],
     queryFn: async () => {
       const res = await fetch(
-        `http://localhost:5000/v2/appointmentOptions?date=${date}`
+        `https://doctors-portal-server-zeta-three.vercel.app/v2/appointmentOptions?date=${date}`
       );
       const data = await res.json();
       return data;

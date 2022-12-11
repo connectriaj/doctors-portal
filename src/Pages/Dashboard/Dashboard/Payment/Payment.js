@@ -10,12 +10,12 @@ const stripePromise = loadStripe(process.env.REACT_APP_stripe_pk);
 
 const Payment = () => {
   const booking = useLoaderData();
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   const { treatment, price, slot, appointmentDate } = booking;
 
-  if (navigation.state === "loading") {
-    return <Loading></Loading>;
-  }
+  // if (navigation.state === "loading") {
+  //   return <Loading></Loading>;
+  // }
 
   return (
     <div>

@@ -39,7 +39,7 @@ const AddDoctor = () => {
           };
 
           // save doctor information to the database
-          fetch(`http://localhost:5000/doctors`, {
+          fetch(`https://doctors-portal-server-zeta-three.vercel.app/doctors`, {
             method: "POST",
             headers: {
               "content-type": "application/json",
@@ -57,7 +57,7 @@ const AddDoctor = () => {
       });
   };
 
-  const url = `http://localhost:5000/appointmentSpecialty`;
+  const url = `https://doctors-portal-server-zeta-three.vercel.app/appointmentSpecialty`;
   const { data: specialties, isLoading } = useQuery({
     queryKey: ["specialty"],
     queryFn: async () => {
